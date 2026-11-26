@@ -14,7 +14,8 @@ export function App() {
     if (location.pathname === '/' && location.hash === '#platform') {
       const platform = document.getElementById('platform')
       platform?.focus({ preventScroll: true })
-      platform?.scrollIntoView({ block: 'start' })
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      platform?.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'instant' : 'smooth' })
       return
     }
 

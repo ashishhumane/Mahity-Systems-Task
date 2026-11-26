@@ -48,22 +48,20 @@
 .verification-track::after {
   content: '';
   position: absolute;
-  top: -2px;
+  top: -8px;
   left: 0;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #bfd1ff;
-  box-shadow: 0 0 10px 3px #79a1ff;
+  width: 100%;
+  height: 17px;
+  background: radial-gradient(circle at 8px center, #bfd1ff 2px, #79a1ff80 4px, transparent 8px);
   animation: verification-signal 2.8s linear infinite;
 }
 
 .verification-track-reverse::after { animation-direction: reverse; }
 
 @keyframes verification-signal {
-  0% { left: 0; opacity: 0; }
+  0% { transform: translateX(-8px); opacity: 0; }
   16%, 76% { opacity: 1; }
-  100% { left: calc(100% - 5px); opacity: 0; }
+  100% { transform: translateX(calc(100% - 8px)); opacity: 0; }
 }
 
 .verification-center {

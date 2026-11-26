@@ -8,7 +8,29 @@ export function CursorGlow() {
     if (!layer) return
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let frame = 0
+    let x = 0
+    let y = 0
+    let targetX = 0
+    let targetY = 0
+    let visible = false
+
+    function animate() {
+      if (!layer) return
+      frame = 0
+      x += (targetX - x) * .24
+      y += (targetY - y) * .24
+      layer.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`
+
+      if (Math.hypot(targetX - x, targetY - y) > .5) {
+        frame = requestAnimationFrame(animate)
+      }
+    }
+
     function hide() {
+      visible = false
+      cancelAnimationFrame(frame)
+      frame = 0
       layer?.style.setProperty('--site-glow-opacity', '0')
     }
     function move(event: PointerEvent) {
@@ -16,8 +38,14 @@ export function CursorGlow() {
         hide()
         return
       }
-      layer?.style.setProperty('--site-glow-x', `${event.clientX}px`)
-      layer?.style.setProperty('--site-glow-y', `${event.clientY}px`)
+      targetX = event.clientX
+      targetY = event.clientY
+      if (!visible) {
+        x = targetX
+        y = targetY
+        visible = true
+      }
+      if (!frame) frame = requestAnimationFrame(animate)
       layer?.style.setProperty('--site-glow-opacity', '1')
     }
 
@@ -26,6 +54,7 @@ export function CursorGlow() {
     window.addEventListener('blur', hide)
     motion.addEventListener('change', hide)
     return () => {
+      cancelAnimationFrame(frame)
       window.removeEventListener('pointermove', move)
       document.documentElement.removeEventListener('pointerleave', hide)
       window.removeEventListener('blur', hide)

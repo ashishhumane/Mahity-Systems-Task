@@ -1,16 +1,26 @@
 import type { PointerEvent } from 'react'
 
+const pendingMovement = new WeakMap<HTMLElement, number>()
+
 export function moveGridLight(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== 'mouse') return
+  if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const hero = event.currentTarget
-  const bounds = hero.getBoundingClientRect()
-  hero.style.setProperty('--cursor-x', `${event.clientX - bounds.left}px`)
-  hero.style.setProperty('--cursor-y', `${event.clientY - bounds.top}px`)
-  hero.style.setProperty('--cursor-visible', '1')
+  const { clientX, clientY } = event
+  cancelAnimationFrame(pendingMovement.get(hero) ?? 0)
+  pendingMovement.set(hero, requestAnimationFrame(() => {
+    pendingMovement.delete(hero)
+    const bounds = hero.getBoundingClientRect()
+    hero.style.setProperty('--cursor-x', `${clientX - bounds.left}px`)
+    hero.style.setProperty('--cursor-y', `${clientY - bounds.top}px`)
+    hero.style.setProperty('--cursor-visible', '1')
+  }))
 }
 
 export function hideGridLight(event: PointerEvent<HTMLElement>) {
-  event.currentTarget.style.setProperty('--cursor-visible', '0')
+  const hero = event.currentTarget
+  cancelAnimationFrame(pendingMovement.get(hero) ?? 0)
+  pendingMovement.delete(hero)
+  hero.style.setProperty('--cursor-visible', '0')
 }
 
 const points = [

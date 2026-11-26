@@ -20,11 +20,14 @@ body {
 #root { isolation: isolate; }
 .site-cursor-glow {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 38rem;
+  height: 38rem;
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(
-    19rem circle at var(--site-glow-x, 0px) var(--site-glow-y, 0px),
+    circle closest-side,
     #4e76c82e,
     transparent
   );
@@ -38,7 +41,8 @@ button:disabled { cursor: default; opacity: .6; }
 :focus-visible { outline: 2px solid var(--mint); outline-offset: 5px; }
 h1, h2, h3, p { margin: 0; }
 .shell { width: min(100% - 3rem, 74rem); margin-inline: auto; }
-.site-header { background: #0b101b80; border-bottom: 1px solid var(--line); }
+.site-header { position: relative; z-index: 2; background: #0b101b80; border-bottom: 1px solid var(--line); }
+.mobile-navigation { display: none; }
 .site-footer {
   padding: 1.25rem 1rem;
   color: var(--muted);
@@ -117,8 +121,8 @@ h1, h2, h3, p { margin: 0; }
   gap: clamp(2rem, 6vw, 6rem);
   padding-block: clamp(4rem, 8vw, 7rem);
 }
-.hero-copy, .verification { animation: arrive .65s ease-out both; }
-.verification { animation-delay: .12s; }
+.hero-copy, .verification { animation: arrive .75s cubic-bezier(.22, 1, .36, 1) both; }
+.verification { animation-delay: .08s; }
 @keyframes arrive { from { opacity: 0; transform: translateY(12px); } }
 .eyebrow {
   font-family: 'IBM Plex Mono', Consolas, monospace;
@@ -186,12 +190,50 @@ h2 { font-size: clamp(1.8rem, 4vw, 3.3rem); letter-spacing: -.045em; line-height
   .contact-form fieldset > :nth-child(n + 3) { grid-column: 1 / -1; }
 }
 @media (max-width: 48rem) {
+  .desktop-navigation { display: none; }
+  .mobile-navigation { display: block; position: relative; }
+  .mobile-navigation summary {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    list-style: none;
+    cursor: pointer;
+  }
+  .mobile-navigation summary::-webkit-details-marker { display: none; }
+  .mobile-navigation summary span {
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 -6px currentColor, 0 6px currentColor;
+  }
+  .mobile-navigation nav {
+    position: absolute;
+    inset: calc(100% + .5rem) 0 auto auto;
+    display: grid;
+    gap: 0;
+    min-width: 10rem;
+    padding: .35rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 12px 24px #03071088;
+  }
+  .mobile-navigation nav a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: .75rem;
+    border-radius: 4px;
+  }
+  .mobile-navigation nav a:hover { background: #263550; }
   .hero-inner, .contact-inner, .capability-grid { grid-template-columns: 1fr; }
   .shell { width: min(100% - 2rem, 74rem); }
   .contact-topics { margin-top: 1.5rem; }
 }
 @media (max-width: 25rem) {
-  .platform-link { display: none; }
   h1 { font-size: clamp(2.6rem, 11vw, 3.5rem); }
   .contact-inner h1 { font-size: 3rem; }
 }
